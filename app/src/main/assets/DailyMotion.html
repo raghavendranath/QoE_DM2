@@ -1,0 +1,140 @@
+<html>
+
+<head>
+    <script src='https://api.dmcdn.net/all.js'></script>
+</head>
+
+<body>
+<div id='player'></div>
+<script>
+
+
+        var videos = ["x3u9889","x41zqms","x2dehu4","x2defj7","x50bmpk","x2ivx8p","x3k6z50","x2ju4lj","x2g7b3g","x2hpael","x2l44hz"];
+        var player = DM.player(document.getElementById('player'), {
+            video: videos[Math.floor((Math.random() * 10) + 1)],
+            width: '315p',
+            height: '340p',
+            params: {
+                autoplay: true,
+                mute: true
+            }
+        });
+
+      /*  function myMethod() {
+            tct = AndroidFunction.getString();
+            player.load(tct, {
+                autoplay: true
+            });
+        }*/
+
+        var duration;
+        var currentTime;
+
+        var count = 0;
+
+
+
+        var dmExtPlayer, videoUrl, videoDuration, mcs_timer;
+        var playerSlider, leftTime, sc, progressC, progressB;
+        var playerState = "NA",
+            playbackQuality = "NA",
+            playbackRate = "NA";
+        var hasPlayer = false,
+            mcs_timerInterval = 500;
+
+        // variables to store progress and label and Video length
+        var label, completed, buffered;
+
+        // try getting Netflix player every 50ms
+
+
+        add_handles();
+        hasPlayer = true;
+
+        function resetTimer() {
+            clearTimer();
+            mcs_timer = setInterval(messageContentScript, mcs_timerInterval);
+            console.log(mcs_timerInterval);
+        }
+
+        function clearTimer() {
+            if (mcs_timer) {
+                clearInterval(mcs_timer);
+            }
+        }
+        console.log("Start_Time : " + Date.now() / 1000);
+
+        // listen to the onHasPlayer event, and add event handle
+        // to the miscellaneous player events dispatched by Youtube API
+        document.addEventListener("onHasPlayer", function() {
+            add_handles();
+            hasPlayer = true;
+        }, false);
+
+        function add_handles() {
+            init();
+        }
+
+        // functions used by handles
+        function init() {
+            logOnce();
+            resetTimer();
+            console.log("yes video!");
+        }
+        var temp_dur = '0';
+        var temp_quality = '0';
+        var temp_currentTime = '0';
+        var temp_url = '0';
+        var temp_buffer = '0';
+        // log once to the youtube table in the server db
+        // about the basic video info per video play
+        function logOnce() {
+
+            realTime = Date.now();
+            temp_currentTime = player.currentTime;
+            temp_dur = player.duration
+            temp_buffer = player.bufferedTime;
+            temp_quality = player.quality;
+
+
+            var realTime = new Date().getTime() / 1000;
+            console.log("FROM_INJECTED_ONCE," + realTime + ',' + temp_dur + ',' + temp_currentTime + ',' + temp_buffer + ',' + temp_quality);
+
+
+            messageContentScript();
+        }
+
+        // being called repetitively by timer to log the real time streaming
+        function messageContentScript() {
+            // get time from youtube time bar;
+
+            var realTime = new Date().getTime() / 1000;
+            temp_dur = player.duration
+            temp_currentTime = player.currentTime;
+            temp_buffer = player.bufferedTime;
+            temp_quality = player.quality;
+                if (count == 1) {
+                    return;
+                }
+            if (player.ended) {
+                if (count == 1) {
+                    return;
+                }
+                if (count == 0) {
+                    console.log("End Time: " + Date.now() / 1000);
+                    count = 1;
+                }
+
+            }
+            var now = new Date().getTime();
+            while (new Date().getTime() < now + 10) {
+
+            }
+
+                console.log("FROM_INJECTED_REPEAT," + realTime + ',' + temp_dur + ',' + temp_currentTime + ',' + temp_buffer + ',' + temp_quality);
+
+        }
+    </script>
+</body>
+
+</html>
